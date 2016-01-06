@@ -59,5 +59,42 @@ function data.readAnn()
     end
     return ret
 end
+
+function data.readHeads(d)
+    local dir2 = 'data/heads/'
+    local ann = data.readAnn()
+    local tbl,map = data.readY()
+    local d = d or 200
+    local N = #tbl-1
+    X = torch.Tensor(N,3,d,d)
+    Y = torch.Tensor(N)
+    for i=1,N do
+        X[i] = image.load(dir2..tbl[i+1][1])
+        Y[i] = tbl[i+1][3]
+        if(i%100==0) then print(i,N) end
+    end 
+    return X,Y
+end
+
+
+function data.readYTensor(tbl)
+    local tbl = tbl or data.readY()
+    local N = #tbl-1
+    Y = torch.Tensor(N)
+    for i=1,N do
+        Y[i] = tbl[i+1][3]
+    end 
+    return Y
+end
+
+function data.saveHeads()
+    local X,Y = data.readHeads()
+    return torch.save('data/heads.t7',{X=X,Y=Y})
+end
+
+function data.loadHeads()
+    local data = torch.load('data/heads.t7')
+    return data.X,data.Y
+end
     
 return data
